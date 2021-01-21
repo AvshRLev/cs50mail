@@ -11,6 +11,16 @@
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
     <hr>
 
+    <div id="letter-view">
+        <div><strong>From:</strong>&nbsp;<span id="from"></span></div>
+        <div><strong>To:</strong>&nbsp;<span id="to"></span></div>
+        <div><strong>Subject:</strong>&nbsp;<span id="letter-subject"></span></div>
+        <div><strong>Timestamp:</strong>&nbsp;<span id="letter-time"></span></div>
+        <button class="btn btn-sm btn-outline-primary" id="reply">Reply</button>
+        <hr>
+        <p id="letter-body"></p>
+    </div>
+
     <div id="emails-view">
     </div>
 

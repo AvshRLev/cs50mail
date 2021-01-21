@@ -15,6 +15,7 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#letter-view').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -44,6 +45,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#letter-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -68,15 +70,21 @@ function load_mailbox(mailbox) {
       element.appendChild(subject);
       element.appendChild(time);
       element.className = 'mail-in-list';
-      //element.innerHTML = `From: ${email.sender}    Subject: ${email.subject}     Recieved at: ${email.timestamp}`;
       if (email.read === true) {
         element.className = 'email-list-read';
       } else {
         element.className = 'email-list-unread';
       }
-      element.setAttribute('id', `email_${email.id}`);
+      element.setAttribute('id', `${email.id}`);
       element.addEventListener('click', function() {
-        console.log('this been clicked yo')
+        console.log(`${email.read}, ${email.id} `);
+        fetch(`/emails/${email.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            read: true,
+          })
+        })
+        load_letter(email.id);
       });
     document.querySelector('#emails-view').append(element);
     });
@@ -84,4 +92,26 @@ function load_mailbox(mailbox) {
     
     console.log(emails);
   }); 
+
+  
+}
+
+function load_letter(id) {
+
+  // Show the letter and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#letter-view').style.display = 'block';
+  
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(email => {
+    console.log(email);
+    document.querySelector('#from').innerHTML = email.sender;
+    document.querySelector('#to').innerHTML = email.recipients;
+    document.querySelector('#letter-subject').innerHTML = email.subject;
+    document.querySelector('#letter-time').innerHTML = email.timestamp;
+    document.querySelector('#letter-body').innerHTML = email.body;
+      
+    })
 }
