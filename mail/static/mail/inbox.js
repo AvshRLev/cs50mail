@@ -114,6 +114,16 @@ function load_letter(id) {
     document.querySelector('#letter-subject').innerHTML = email.subject;
     document.querySelector('#letter-time').innerHTML = email.timestamp;
     document.querySelector('#letter-body').innerHTML = email.body;
+    document.querySelector('#reply').addEventListener('click', function() {
+      compose_email();
+      document.querySelector('#compose-recipients').value = email.sender;
+      if (email.subject.substring(0,3) === 'Re:') {
+        document.querySelector('#compose-subject').value = email.subject;
+      } else {
+        document.querySelector('#compose-subject').value = `Re: ${email.subject}`;
+      }
+      document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote:\n ${email.body}`;
+    })
     document.querySelector('#archive').style.display = 'block'
     if (email.archived === false) {
       document.querySelector('#archive').innerHTML = 'Archive';
@@ -130,8 +140,7 @@ function load_letter(id) {
           load_mailbox('inbox');
           location.reload();
           return false;
-        });
-        
+        });        
       })
     } else if (email.archived === true) {
       document.querySelector('#archive').innerHTML = 'UnArchive';
@@ -147,12 +156,10 @@ function load_letter(id) {
           load_mailbox('inbox');
           location.reload();
           return false;
-        })
-        
-        
+        })        
       })
     }
-    })
+  })
 }
 
 function load_letter_in_sent(id) {
