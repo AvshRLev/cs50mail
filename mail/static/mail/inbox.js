@@ -84,12 +84,14 @@ function load_mailbox(mailbox) {
             read: true,
           })
         })
-        load_letter(email.id);
+        if (mailbox === 'sent') {
+          load_letter_in_sent(email.id)
+        } else {
+          load_letter(email.id);
+        };
       });
     document.querySelector('#emails-view').append(element);
     });
-
-    
     console.log(emails);
   }); 
 
@@ -106,12 +108,71 @@ function load_letter(id) {
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(email => {
-    console.log(email);
+    console.log(email.id);
     document.querySelector('#from').innerHTML = email.sender;
     document.querySelector('#to').innerHTML = email.recipients;
     document.querySelector('#letter-subject').innerHTML = email.subject;
     document.querySelector('#letter-time').innerHTML = email.timestamp;
     document.querySelector('#letter-body').innerHTML = email.body;
-      
+    document.querySelector('#archive').style.display = 'block'
+    if (email.archived === false) {
+      document.querySelector('#archive').innerHTML = 'Archive';
+      document.querySelector('#archive').addEventListener('click', function() {
+        console.log(`${email.archived}, ${email.id} `);
+        fetch(`/emails/${email.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+          archived: true,
+          })
+        })
+        .then(() => {
+          console.log('now');
+          load_mailbox('inbox');
+          location.reload();
+          return false;
+        });
+        
+      })
+    } else if (email.archived === true) {
+      document.querySelector('#archive').innerHTML = 'UnArchive';
+      document.querySelector('#archive').addEventListener('click', function() {
+        console.log(`${email.archived}, ${email.id} `);
+        fetch(`/emails/${email.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            archived: false,
+          })
+        })
+        .then( () => {
+          load_mailbox('inbox');
+          location.reload();
+          return false;
+        })
+        
+        
+      })
+    }
     })
+}
+
+function load_letter_in_sent(id) {
+
+  // Show the letter and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#letter-view').style.display = 'block';
+  
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(email => {
+    console.log(email.id);
+    document.querySelector('#from').innerHTML = email.sender;
+    document.querySelector('#to').innerHTML = email.recipients;
+    document.querySelector('#letter-subject').innerHTML = email.subject;
+    document.querySelector('#letter-time').innerHTML = email.timestamp;
+    document.querySelector('#letter-body').innerHTML = email.body;
+    document.querySelector('#archive').style.display = 'none';
+      
+    }
+    )
 }
