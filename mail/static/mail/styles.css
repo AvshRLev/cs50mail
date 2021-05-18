@@ -1,3 +1,28 @@
 textarea {
     min-height: 400px;
 }
+
+.email-list-read {
+    border-style: ridge;
+    background-color: gray;
+}
+.email-list-unread {
+    border-style: ridge;
+}
+
+.mail-in-list {
+    display: inline;
+}
+
+.sender {
+    padding-right: 10%;    
+    padding-left: 2%;
+}
+
+.subject {
+    padding-right: 10%;
+}
+
+.time {
+    float: right;
+}
